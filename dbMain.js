@@ -2,8 +2,8 @@ var entities = [];
 var zoom=1;
 var holdingMouse = false;
 var holdingMouseTimer = 0;
-var dragThreshold = 10;
-var longClickThreshold = 30;
+var dragThreshold = 2;
+var longClickThreshold = 20;
 var waitUntilMouseReleased = false;
 var isSomethingSelected=false;
 var movingCanvas = false;
@@ -23,7 +23,7 @@ function setup(){
 }
 
 function draw(){
-  background(200);
+  background(240);
   MoveCanvas();
   globalMouseX = mouseX + mainCameraX;
   globalMouseY = mouseY + mainCameraY;
@@ -54,6 +54,7 @@ function draw(){
     longClick();
   }
 
+  mouseInfo();
 }
 
 function mouseWheel(event){
@@ -64,17 +65,28 @@ function mouseWheel(event){
    zoom = constrain(zoom,0.5,2.5);
 }
 
+function mouseInfo(){
+  for(var i=0; i<entities.length; i++){
+  if(CheckIfWithinRange(mouseX,mouseY,entities[i].visualX-entities[i].visualWidth/2,entities[i].visualX+entities[i].visualWidth/2,
+  entities[i].visualY - entities[i].visualHeight/2,entities[i].visualY + entities[i].visualHeight/2)){
+    entities[i].cursorOver = true;
+    }
+    else {
+      entities[i].cursorOver = false;
+    }
+  }
+}
+
 function mousePressed(){
   DeselectAll();
   holdingMouse = true;
 
+
   for(var i=0; i<entities.length;i++){
-    if(CheckIfWithinRange(mouseX,mouseY,entities[i].visualX-entities[i].visualWidth/2,entities[i].visualX+entities[i].visualWidth/2,
-    entities[i].visualY - entities[i].visualHeight/2,entities[i].visualY + entities[i].visualHeight/2)){
-      DeselectAll();
+    if(entities[i].cursorOver)
       entities[i].selected = true;
-    }
   }
+
 
 }
 
@@ -82,19 +94,14 @@ function mouseReleased(){
   if(holdingMouseTimer < dragThreshold){
     var clickedSomething = false;
     //CODE FOR SELECTING ENTITIES
-    for(var i=0; i<entities.length;i++){
-      if(CheckIfWithinRange(mouseX,mouseY,entities[i].visualX-entities[i].visualWidth/2,entities[i].visualX+entities[i].visualWidth/2,
-      entities[i].visualY - entities[i].visualHeight/2,entities[i].visualY + entities[i].visualHeight/2)){
+    for(var i=0; i<entities.length; i++){
+      if(entities[i].cursorOver){
         DeselectAll();
         entities[i].selected = true;
         clickedSomething = true;
       }
     }
-    /*
-    if(clickedSomething == false )
-      entities.push(new Entity("default",globalMouseX,globalMouseY));
-    */
-    }
+  }
 
     holdingMouse = false;
     waitUntilMouseReleased = false;
@@ -117,9 +124,10 @@ function MoveCanvas(){
   //first check that nothing is selected at the moment
   if(isSomethingSelected == false && holdingMouseTimer > dragThreshold && movingCanvasDebuff<=0){
     dragging = abs(mouseX - pmouseX) + abs(mouseY - pmouseY);
-    print(dragging);
+
 
     if(dragging > 2){
+      print(dragging);
       movingCanvas = true;
       mainCameraX += mouseX - pmouseX;
       mainCameraY += mouseY - pmouseY;
@@ -128,17 +136,10 @@ function MoveCanvas(){
 }
 
 function CheckIfWithinRange(xCheck,yCheck,boxLeft,boxRight,boxUp,boxDown){
-  if((xCheck > tp(boxLeft,0)) && (xCheck,0 < tp(boxRight,0)) && (yCheck > tp(boxUp,1)) && (yCheck < tp(boxDown,1)))
+  if((xCheck > tp(boxLeft,0)) && (xCheck < tp(boxRight,0)) && (yCheck > tp(boxUp,1)) && (yCheck < tp(boxDown,1)))
     return true;
   else
     return false;
-
-/*
-    if((tp(xCheck,0) > tp(boxLeft,0)) && (tp(xCheck,0) < tp(boxRight,0)) && (tp(yCheck,1) > tp(boxUp,1)) && (tp(yCheck,1) < tp(boxDown,1)))
-      return true;
-    else
-      return false;
-*/
 }
 
 function DeselectAll(){
