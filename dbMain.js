@@ -16,14 +16,21 @@ var globalMouseX=0;
 var globalMouseY=0;
 
 
+
+var toolbarHeight=30; //the higher the value the smaller the toolbar will be
 function setup(){
-  var canvas = createCanvas(800,500);
+  var canvas = createCanvas(windowWidth-30,windowHeight-30);
   rectMode(CENTER);
   canvas.parent('myCanvas');
 }
 
+function windowResized() {
+  resizeCanvas(windowWidth-30, windowHeight-30);
+}
+
 function draw(){
   background(240);
+
   MoveCanvas();
   globalMouseX = mouseX + mainCameraX;
   globalMouseY = mouseY + mainCameraY;
@@ -53,9 +60,39 @@ function draw(){
   if(holdingMouseTimer > longClickThreshold && waitUntilMouseReleased==false){
     longClick();
   }
-
+  DrawGrid(20);
+  DrawToolbar();
   mouseInfo();
 }
+function DrawGrid(size){
+  stroke(0,25);
+  strokeWeight(1);
+  if(isSomethingSelected && holdingMouse)
+  strokeWeight(2);
+  for(var hor=mainCameraX%size; hor < height; hor+=size){
+      line(0,hor,width,hor);
+  }
+  for(var vert=mainCameraY%size; vert < width; vert+=size){
+    line(vert,0,vert,height);
+  }
+
+}
+
+
+function DrawToolbar(){
+  fill(50);
+  noStroke();
+  rect(width/2,height/toolbarHeight,width,height/(toolbarHeight/2));
+  textAlign(RIGHT,CENTER);
+  fill(255);
+  textSize(height/15);
+  text("mindfulDB",width-5,height/toolbarHeight);
+  fill(0);
+  textAlign(LEFT,CENTER);
+  textSize(height/38);
+  text("hold left click to open radial menu",width/200,height - height/50);
+}
+
 
 function mouseWheel(event){
 
@@ -70,6 +107,7 @@ function mouseInfo(){
   if(CheckIfWithinRange(mouseX,mouseY,entities[i].visualX-entities[i].visualWidth/2,entities[i].visualX+entities[i].visualWidth/2,
   entities[i].visualY - entities[i].visualHeight/2,entities[i].visualY + entities[i].visualHeight/2)){
     entities[i].cursorOver = true;
+    break;
     }
     else {
       entities[i].cursorOver = false;
@@ -121,9 +159,10 @@ function longClick(){
 }
 
 function MoveCanvas(){
+  dragging = abs(mouseX - pmouseX) + abs(mouseY - pmouseY);
   //first check that nothing is selected at the moment
   if(isSomethingSelected == false && holdingMouseTimer > dragThreshold && movingCanvasDebuff<=0){
-    dragging = abs(mouseX - pmouseX) + abs(mouseY - pmouseY);
+
 
 
     if(dragging > 2){

@@ -6,7 +6,7 @@ function Entity(_entity_name,_x,_y){
   this.selected = false;
   this.cursorOver = false;
   this.visualWidth = textWidth(this.entity_name) + 35;
-  this.visualHeight = 50;
+  this.visualHeight = 35;
 
 
 
@@ -26,7 +26,7 @@ function Entity(_entity_name,_x,_y){
       strokeWeight(1*zoom);
     }
     else{
-      stroke(100,0,255);
+      stroke(40,40,255);
         strokeWeight(3*zoom);
     }
     if(this.cursorOver)
