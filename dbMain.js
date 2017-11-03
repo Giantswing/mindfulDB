@@ -15,10 +15,12 @@ var mainCameraY=0;
 var globalMouseX=0;
 var globalMouseY=0;
 
-
+var textpop;
 
 var toolbarHeight=30; //the higher the value the smaller the toolbar will be
 function setup(){
+  textpop = new textPopup(0,0,"");
+  textpop.active = false;
   var canvas = createCanvas(windowWidth-30,windowHeight-30);
   rectMode(CENTER);
   canvas.parent('myCanvas');
@@ -41,6 +43,7 @@ function draw(){
   for(var i = 0; i < entities.length; i++){
     entities[i].show();
     entities[i].drag();
+    entities[i].specific();
     if(entities[i].selected)
       isSomethingSelected = true;
   }
@@ -80,6 +83,7 @@ function DrawGrid(size){
 
 
 function DrawToolbar(){
+  rectMode(CENTER);
   fill(50);
   noStroke();
   rect(width/2,height/toolbarHeight,width,height/(toolbarHeight/2));
@@ -105,7 +109,7 @@ function mouseWheel(event){
 function mouseInfo(){
   for(var i=0; i<entities.length; i++){
   if(CheckIfWithinRange(mouseX,mouseY,entities[i].visualX-entities[i].visualWidth/2,entities[i].visualX+entities[i].visualWidth/2,
-  entities[i].visualY - entities[i].visualHeight/2,entities[i].visualY + entities[i].visualHeight/2)){
+  entities[i].visualY - entities[i].visualHeight/2,entities[i].visualY + entities[i].visualHeight/2,0)){
     entities[i].cursorOver = true;
     break;
     }
@@ -116,19 +120,19 @@ function mouseInfo(){
 }
 
 function mousePressed(){
-  DeselectAll();
-  holdingMouse = true;
+  if(isSomethingSelected == false || mouseX < width - width/5){
+    DeselectAll();
+    holdingMouse = true;
 
-
-  for(var i=0; i<entities.length;i++){
-    if(entities[i].cursorOver)
-      entities[i].selected = true;
+    for(var i=0; i<entities.length;i++){
+      if(entities[i].cursorOver)
+        entities[i].selected = true;
+    }
   }
-
-
 }
 
 function mouseReleased(){
+  if(isSomethingSelected == false || mouseX < width - width/5){
   if(holdingMouseTimer < dragThreshold){
     var clickedSomething = false;
     //CODE FOR SELECTING ENTITIES
@@ -144,6 +148,7 @@ function mouseReleased(){
     holdingMouse = false;
     waitUntilMouseReleased = false;
     movingCanvas = false;
+  }
 }
 
 function longClick(){
@@ -166,7 +171,7 @@ function MoveCanvas(){
 
 
     if(dragging > 2){
-      print(dragging);
+      //print(dragging);
       movingCanvas = true;
       mainCameraX += mouseX - pmouseX;
       mainCameraY += mouseY - pmouseY;
@@ -174,11 +179,20 @@ function MoveCanvas(){
   }
 }
 
-function CheckIfWithinRange(xCheck,yCheck,boxLeft,boxRight,boxUp,boxDown){
-  if((xCheck > tp(boxLeft,0)) && (xCheck < tp(boxRight,0)) && (yCheck > tp(boxUp,1)) && (yCheck < tp(boxDown,1)))
-    return true;
-  else
-    return false;
+function CheckIfWithinRange(xCheck,yCheck,boxLeft,boxRight,boxUp,boxDown,mode){
+  if(mode==0){
+    if((xCheck > tp(boxLeft,0)) && (xCheck < tp(boxRight,0)) && (yCheck > tp(boxUp,1)) && (yCheck < tp(boxDown,1)))
+      return true;
+    else
+      return false;
+  }
+
+  if(mode==1){
+    if((xCheck > boxLeft) && (xCheck < boxRight) && (yCheck > boxUp) && (yCheck < boxDown))
+      return true;
+    else
+      return false;
+  }
 }
 
 function DeselectAll(){
