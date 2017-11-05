@@ -19,8 +19,11 @@ var textpop;
 
 var toolbarHeight=30; //the higher the value the smaller the toolbar will be
 
+var radMenu;
+
 function setup(){
   textpop = new textPopup();
+  radMenu = new RadialMenu();
   textpop.active = false;
   var canvas = createCanvas(windowWidth-30,windowHeight-30);
   rectMode(CENTER);
@@ -44,9 +47,12 @@ function draw(){
   for(var i = 0; i < entities.length; i++){
     entities[i].show();
     entities[i].drag();
-    entities[i].specific();
     if(entities[i].selected)
       isSomethingSelected = true;
+  }
+
+  for(var i= 0; i< entities.length; i++){
+    entities[i].specific();
   }
 
   //LOGIC PART
@@ -67,6 +73,8 @@ function draw(){
 
   DrawGrid(20);
   textpop.show();
+  radMenu.show();
+
   DrawToolbar();
   //DrawRoundBorders();
   mouseInfo();
@@ -81,12 +89,12 @@ function DrawGrid(size){
   stroke(0,25);
   strokeWeight(1);
   if(isSomethingSelected && holdingMouse)
-  strokeWeight(3);
+  strokeWeight(2);
   for(var hor=mainCameraX%size; hor < height; hor+=size){
       line(0,hor,width,hor);
   }
   for(var vert=mainCameraY%size; vert < width; vert+=size){
-    strokeWeight(2);
+    //strokeWeight(2);
     stroke(0,25);
     line(vert,0,vert,height);
 
@@ -164,6 +172,18 @@ function mousePressed(){
     textpop.deActivate();
   }
 
+  if(radMenu.active){
+    if(dist(radMenu.xx,radMenu.yy,mouseX,mouseY) > radMenu.size*1.05){
+      radMenu.active = false;
+    }
+    else{
+      if(radMenu.optionSelected == 0){
+        entities.push(new Entity("default",mouseX - mainCameraX,mouseY - mainCameraY));
+        radMenu.active = false;
+      }
+    }
+  }
+
   if(isSomethingSelected == false || mouseX < width - width/3){
     DeselectAll();
     holdingMouse = true;
@@ -202,7 +222,11 @@ function longClick(){
     dragging = 0;
     movingCanvasDebuff = 5;
     waitUntilMouseReleased = true;
-    entities.push(new Entity("default",mouseX - mainCameraX,mouseY - mainCameraY));
+
+    //entities.push(new Entity("default",mouseX - mainCameraX,mouseY - mainCameraY));
+    radMenu.begin(mouseX,mouseY);
+
+
     holdingMouse = false;
     waitUntilMouseReleased = false;
     movingCanvas = false;

@@ -90,6 +90,9 @@ function Entity(_entity_name,_x,_y){
 
   this.show = function(){
     this.visualWidth = textWidth(this.obj_name) + 35;
+    //this.visualWidth = 100;
+    //this.visualWidth = this.obj_name.length * 20;
+
     if(this.selected == true){
       if(this.hide == false){
         this.debuff += (1-this.debuff) * 0.4;
@@ -101,11 +104,15 @@ function Entity(_entity_name,_x,_y){
         }
       }
     }
-    //set white background and black borders
-    fill(255);
 
+    rectMode(CENTER); //draw the rectangle in the center of its position
+    noStroke();
+
+    fill(0,40);
+    rect(tp(this.visualX*1.01,0), tp(this.visualY*1.015,1), this.visualWidth, this.visualHeight,5,5,5,5);
+    fill(255);
     if(this.selected == false){
-      stroke(0);
+      stroke(0,200);
       strokeWeight(1*zoom);
     }
     else{
@@ -115,10 +122,8 @@ function Entity(_entity_name,_x,_y){
     if(this.cursorOver)
       fill(200);
 
-    rectMode(CENTER); //draw the rectangle in the center of its position
-    if(this.obj_name == "default")
-      this.visualWidth = 75;
-    rect(tp(this.visualX,0), tp(this.visualY,1), this.visualWidth, this.visualHeight,10,10,10,10);
+
+    rect(tp(this.visualX,0), tp(this.visualY,1), this.visualWidth, this.visualHeight,5,5,5,5);
 
     //setting up the text
     textAlign(CENTER,CENTER);
