@@ -1,4 +1,5 @@
 var entities = [];
+var relations = [];
 var zoom=1;
 var holdingMouse = false;
 var holdingMouseTimer = 0;
@@ -20,6 +21,8 @@ var textpop;
 var toolbarHeight=30; //the higher the value the smaller the toolbar will be
 
 var radMenu;
+
+var MainMode = "move";
 
 function setup(){
   textpop = new textPopup();
@@ -154,15 +157,19 @@ function mouseWheel(event){
 }
 
 function mouseInfo(){
+  madeSelection = false;
   for(var i=0; i<entities.length; i++){
+  entities[i].cursorOver = false;
   if(CheckIfWithinRange(mouseX,mouseY,entities[i].visualX-entities[i].visualWidth/2,entities[i].visualX+entities[i].visualWidth/2,
-  entities[i].visualY - entities[i].visualHeight/2,entities[i].visualY + entities[i].visualHeight/2,0)){
+  entities[i].visualY - entities[i].visualHeight/2,entities[i].visualY + entities[i].visualHeight/2,0) && madeSelection == false){
+    madeSelection = true;
     entities[i].cursorOver = true;
-    break;
     }
+    /*
     else {
       entities[i].cursorOver = false;
     }
+    */
   }
 }
 

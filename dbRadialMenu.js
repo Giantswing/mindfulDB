@@ -63,6 +63,11 @@ if(this.active){
   noStroke();
   rectMode(CENTER);
   rect(this.xx + this.xSize/2,this.yy,this.xSize/5,this.ySize/10,4,4,4,4);
+  //draw relation symbol
+  noFill();
+  stroke(0);
+  strokeWeight(3);
+  line(this.xx - this.xSize/1.8, this.yy, this.xx - this.xSize/2.2,this.yy);
 
 
   fill(0,200);
